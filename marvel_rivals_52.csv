@@ -1,0 +1,52 @@
+Personaje,Rol,Team_Up_1,Team_Up_2
+Hela,Duelist,Namor,Venom
+Captain America,Vanguard,Winter Soldier,Thor
+Devil Dinosaur,Vanguard,Punisher,Jeff
+Doctor Strange,Vanguard,Hulk,Invisible Woman
+Invisible Woman,Strategist,Mr. Fantastic,Human Torch
+Groot,Vanguard,Mantis,Jeff
+Hulk,Vanguard,Captain America,Wolverine
+Magneto,Vanguard,Emma Frost,Scarlet Witch
+Peni Parker,Vanguard,Black Panther,Rocket Racoon
+Rogue,Vanguard,Magneto,Gambit
+The Thing,Vanguard,Human Torch,Invisible Woman
+Thor,Vanguard,Angela,Hela
+Venom,Vanguard,Blade,Phoenix
+Adam Warlock,Strategist,Storm,Ultron
+Cloak & Dagger,Strategist,Luna Snow,The Hood
+Jubilee,Strategist,Blade,The Hood
+Gambit,Strategist,Jubilee,Magneto
+Jeff,Strategist,Venom,Deadpool
+Loki,Strategist,Hela,Mantis
+Luna Snow,Strategist,White Fox,Adam Warlock
+Mantis,Strategist,Star Lord,Adam Warlock
+Rocket Raccoon,Strategist,Groot,Squirrel Girl
+White Fox,Strategist,Black Cat,Psylocke
+Winter Soldier,Duelist,Punisher,Elsa Bloodstone
+Black Cat,Duelist,Spider-Man,Black Panther
+Black Panther,Duelist,Magik,Storm
+Black Widow,Duelist,Hawkeye,Phoenix
+Blade,Duelist,Captain America,Moon Knight
+Cyclops,Duelist,Gambit,Phoenix
+Daredevil,Duelist,Iron Fist,Black Widow
+Deadpool,Duelist,Gambit,Hela
+Hawkeye,Duelist,Cloak & Dagger,Moon Knight
+Iron Fist,Duelist,White Fox,The Thing
+Mr. Fantastic,Duelist,The Thing,Rocket
+Human Torch,Duelist,Jubilee,Storm
+Iron Man,Duelist,Hulk,Thor
+Magik,Duelist,The Hood,Doctor Strange
+Moon Knight,Duelist,Elsa Bloodstone,Cloak & Dagger
+Namor,Duelist,Luna Snow,Black Panther
+Psylocke,Duelist,Emma Frost,Cloak & Dagger
+Scarlet Witch,Duelist,Doctor Strange,Jubilee
+Spider-Man,Duelist,Venom,Peni Parker
+Squirrel Girl,Duelist,Iron Man,Spider-Man
+Star-Lord,Duelist,Groot,Adam Warlock
+Storm,Duelist,Thor,Jeff
+Punisher,Duelist,Rocket Raccoon,Daredevil
+Ultron,Strategist,Peni Parker,Iron Man
+Wolverine,Duelist,Gambit,Cyclops
+Emma Frost,Vanguard,Luna Snow,Mantis
+Phoenix,Duelist,Hela,Rogue
+Angela,Vanguard,Star Lord,Loki

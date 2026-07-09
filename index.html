@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Marvel Rivals Team-Up Dashboard</title>
+    <link rel="icon" type="image/jpeg" href="rivals_icon.jpg">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+</head>
+<body class="bg-[#111827] text-gray-100 min-h-screen font-sans p-6">
+
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-bold mb-2">Marvel Rivals Team-Up Dashboard</h1>
+                <p class="text-gray-400">Estructura tu equipo por roles. Los personajes seleccionados se removerán de las otras casillas dinámicamente.</p>
+            </div>
+            
+            <div class="flex items-center bg-[#1f2937] px-4 py-3 rounded-lg border border-gray-700 shadow-md shrink-0">
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="toggleOcultarLlenos" class="sr-only peer" checked>
+                    <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-600"></div>
+                    <span class="ms-3 text-sm font-medium text-gray-300 select-none">Ocultar sugerencias si el rol está lleno</span>
+                </label>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="space-y-6 bg-[#1f2937] p-6 rounded-lg shadow-xl border border-gray-700">
+                
+                <div>
+                    <h3 class="text-lg font-bold text-red-400 mb-3 flex items-center">🔴 SECCIÓN: DUELISTS (DPS)</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 mb-1">Slot 1</label>
+                            <select id="d1" class="slot-select w-full bg-[#374151] border border-gray-600 rounded p-2 text-white focus:outline-none focus:border-red-500"></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 mb-1">Slot 2</label>
+                            <select id="d2" class="slot-select w-full bg-[#374151] border border-gray-600 rounded p-2 text-white focus:outline-none focus:border-red-500"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-bold text-blue-400 mb-3 flex items-center">🔵 SECCIÓN: VANGUARDS (TANKS)</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 mb-1">Slot 1</label>
+                            <select id="v1" class="slot-select w-full bg-[#374151] border border-gray-600 rounded p-2 text-white focus:outline-none focus:border-blue-500"></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 mb-1">Slot 2</label>
+                            <select id="v2" class="slot-select w-full bg-[#374151] border border-gray-600 rounded p-2 text-white focus:outline-none focus:border-blue-500"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-bold text-green-400 mb-3 flex items-center">🟢 SECCIÓN: STRATEGISTS (HEALERS)</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 mb-1">Slot 1</label>
+                            <select id="s1" class="slot-select w-full bg-[#374151] border border-gray-600 rounded p-2 text-white focus:outline-none focus:border-green-500"></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 mb-1">Slot 2</label>
+                            <select id="s2" class="slot-select w-full bg-[#374151] border border-gray-600 rounded p-2 text-white focus:outline-none focus:border-green-500"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="btnCalcular" class="w-full bg-[#ea580c] hover:bg-[#c2410c] text-white font-bold py-3 px-4 rounded transition-colors shadow mt-4 cursor-pointer">
+                    ⚙️ Analizar Conexiones Completas
+                </button>
+            </div>
+
+            <div id="salidaPanel" class="bg-[#1f2937] p-6 rounded-lg shadow-xl border border-gray-700 space-y-6 overflow-y-auto max-h-[600px]">
+                <p class="text-gray-400 italic">Selecciona personajes y presiona Analizar.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let dbRivals = [];
+        let duelistBase = [];
+        let vanguardBase = [];
+        let strategistBase = [];
+
+        const dropdowns = {
+            d1: document.getElementById('d1'), d2: document.getElementById('d2'),
+            v1: document.getElementById('v1'), v2: document.getElementById('v2'),
+            s1: document.getElementById('s1'), s2: document.getElementById('s2')
+        };
+
+        const toggleOcultarLlenos = document.getElementById('toggleOcultarLlenos');
+
+        // Cargar el CSV automáticamente al abrir la página
+        window.addEventListener('DOMContentLoaded', () => {
+            Papa.parse("marvel_rivals_52.csv", {
+                download: true,
+                header: true,
+                complete: function(results) {
+                    dbRivals = results.data.filter(row => row.Personaje);
+                    inicializarListas();
+                    renderDropdowns();
+                    setupEventListeners();
+                },
+                error: function(err) {
+                    document.getElementById('salidaPanel').innerHTML = `<p class="text-red-400">❌ Error al cargar 'marvel_rivals_52.csv'. Asegúrate de que el archivo esté en la misma carpeta.</p>`;
+                }
+            });
+        });
+
+        function inicializarListas() {
+            duelistBase = dbRivals.filter(r => r.Rol === 'Duelist').map(r => r.Personaje).sort();
+            vanguardBase = dbRivals.filter(r => r.Rol === 'Vanguard').map(r => r.Personaje).sort();
+            strategistBase = dbRivals.filter(r => r.Rol === 'Strategist').map(r => r.Personaje).sort();
+
+            // Cláusula Deadpool comodín
+            if (!vanguardBase.includes("Deadpool")) vanguardBase.push("Deadpool");
+            if (!strategistBase.includes("Deadpool")) strategistBase.push("Deadpool");
+            vanguardBase.sort();
+            strategistBase.sort();
+        }
+
+        function renderDropdowns() {
+            actualizarOpcionesIndividuales('d1', duelistBase);
+            actualizarOpcionesIndividuales('d2', duelistBase);
+            actualizarOpcionesIndividuales('v1', vanguardBase);
+            actualizarOpcionesIndividuales('v2', vanguardBase);
+            actualizarOpcionesIndividuales('s1', strategistBase);
+            actualizarOpcionesIndividuales('s2', strategistBase);
+        }
+
+        function setupEventListeners() {
+            Object.keys(dropdowns).forEach(id => {
+                dropdowns[id].addEventListener('change', () => {
+                    filtrarDuplicadosGlobales();
+                });
+            });
+
+            // Si cambian el switch, vuelve a procesar la vista actual automáticamente
+            toggleOcultarLlenos.addEventListener('change', analizarComposicion);
+            document.getElementById('btnCalcular').addEventListener('click', analizarComposicion);
+        }
+
+        function filtrarDuplicadosGlobales() {
+            const valoresActuales = {};
+            const ocupados = new Set();
+
+            Object.keys(dropdowns).forEach(id => {
+                const val = dropdowns[id].value;
+                valoresActuales[id] = val;
+                if (val && val !== "") ocupados.add(val);
+            });
+
+            const mapeoBases = { d1: duelistBase, d2: duelistBase, v1: vanguardBase, v2: vanguardBase, s1: strategistBase, s2: strategistBase };
+
+            Object.keys(dropdowns).forEach(id => {
+                const valorPropio = valoresActuales[id];
+                const baseRol = mapeoBases[id];
+                const filtrados = baseRol.filter(p => !ocupados.has(p) || p === valorPropio);
+                actualizarOpcionesIndividuales(id, filtrados, valorPropio);
+            });
+        }
+
+        function actualizarOpcionesIndividuales(id, lista, valorSeleccionado = "") {
+            const el = dropdowns[id];
+            el.innerHTML = '<option value="">(Vacío)</option>';
+            lista.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p;
+                opt.textContent = p;
+                if (p === valorSeleccionado) opt.selected = true;
+                el.appendChild(opt);
+            });
+        }
+
+        // Core de Análisis Bidireccional e Inyección de Filtros de Capacidad
+        function analizarComposicion() {
+            const seleccionados = Object.keys(dropdowns).map(id => dropdowns[id].value).filter(v => v !== "");
+            const salida = document.getElementById('salidaPanel');
+
+            if (seleccionados.length === 0) {
+                salida.innerHTML = '<p class="text-gray-400 italic">Completa al menos un slot para ver el mapa completo de sinergias.</p>';
+                return;
+            }
+
+            // Mapeos rápidos en caliente
+            const teamUp1Map = {}, teamUp2Map = {}, rolesMap = { "Deadpool": "Duelist" };
+            dbRivals.forEach(r => {
+                teamUp1Map[r.Personaje] = r.Team_Up_1;
+                teamUp2Map[r.Personaje] = r.Team_Up_2;
+                if(r.Personaje !== "Deadpool") rolesMap[r.Personaje] = r.Rol;
+            });
+
+            // Contador de ocupación por sección
+            const slotsOcupadosPorRol = {
+                Duelist: [dropdowns.d1.value, dropdowns.d2.value].filter(v => v !== "").length,
+                Vanguard: [dropdowns.v1.value, dropdowns.v2.value].filter(v => v !== "").length,
+                Strategist: [dropdowns.s1.value, dropdowns.s2.value].filter(v => v !== "").length
+            };
+
+            // 1. Sinergias Activas
+            const activos = { Duelist: [], Vanguard: [], Strategist: [] };
+            const categorias = {
+                Duelist: [dropdowns.d1.value, dropdowns.d2.value],
+                Vanguard: [dropdowns.v1.value, dropdowns.v2.value],
+                Strategist: [dropdowns.s1.value, dropdowns.s2.value]
+            };
+
+            Object.keys(categorias).forEach(rol => {
+                categorias[rol].forEach(p => {
+                    if (!p) return;
+                    const t1 = teamUp1Map[p];
+                    const t2 = teamUp2Map[p];
+                    if ((t1 && seleccionados.includes(t1)) || (t2 && seleccionados.includes(t2))) {
+                        const aliados = [t1, t2].filter(a => seleccionados.includes(a));
+                        activos[rol].push(`<li class="ml-4 list-disc"><strong>${p}</strong> ➔ Activo por <strong>${aliados.join(' & ')}</strong></li>`);
+                    }
+                });
+            });
+
+            // 2. Recomendaciones Cruzadas Separadas Estrictamente para Ordenamiento
+            const recRecibe = { Duelist: [], Vanguard: [], Strategist: [] };
+            const recOtorga = { Duelist: [], Vanguard: [], Strategist: [] };
+
+            // Conjuntos auxiliares para no duplicar la misma sugerencia idéntica
+            const vistasRecibe = { Duelist: new Set(), Vanguard: new Set(), Strategist: new Set() };
+            const vistasOtorga = { Duelist: new Set(), Vanguard: new Set(), Strategist: new Set() };
+
+            seleccionados.forEach(p => {
+                // A) Recibe: "consigue team up" (Prioridad 1)
+                [teamUp1Map[p], teamUp2Map[p]].forEach(comp => {
+                    if (comp && !seleccionados.includes(comp)) {
+                        const rComp = rolesMap[comp] || "Duelist";
+                        const clave = `${comp}|${p}`;
+                        if (!vistasRecibe[rComp].has(clave)) {
+                            vistasRecibe[rComp].add(clave);
+                            recRecibe[rComp].push({ comp, dueño: p });
+                        }
+                    }
+                });
+
+                // B) Otorga: "Obtiene team up gracias a" (Prioridad 2)
+                dbRivals.forEach(r => {
+                    if ((r.Team_Up_1 === p || r.Team_Up_2 === p) && !seleccionados.includes(r.Personaje)) {
+                        const rCazador = rolesMap[r.Personaje] || "Duelist";
+                        const clave = `${r.Personaje}|${p}`;
+                        if (!vistasOtorga[rCazador].has(clave)) {
+                            vistasOtorga[rCazador].add(clave);
+                            recOtorga[rCazador].push({ cazador: r.Personaje, dueño: p });
+                        }
+                    }
+                });
+            });
+
+            // Renderizar HTML Final
+            let html = `<h2 class="text-xl font-bold text-orange-400 border-b border-gray-700 pb-2">🔥 Sinergias Activas en el Equipo</h2>`;
+            ['Duelist', 'Vanguard', 'Strategist'].forEach(rol => {
+                html += `<h4 class="text-sm font-semibold mt-3 text-gray-300">⚔️ Sección ${rol}</h4>`;
+                html += activos[rol].length > 0 ? `<ul class="space-y-1 mt-1 text-sm">${activos[rol].join('')}</ul>` : `<p class="text-gray-500 italic text-xs ml-4">Sin sinergias activas en esta sección.</p>`;
+            });
+
+            html += `<div class="my-6 border-t border-gray-700"></div>`;
+            html += `<h2 class="text-xl font-bold text-green-400 border-b border-gray-700 pb-2">💡 Opciones Disponibles para Slots Vacíos</h2>`;
+            html += `<p class="text-xs text-gray-400 mb-2">Elegir estos personajes habilitará conexiones directas con tu setup:</p>`;
+
+            ['Duelist', 'Vanguard', 'Strategist'].forEach(rol => {
+                // VERIFICACIÓN: Si el switch está activo y ya hay 2 seleccionados en este rol, saltamos su renderizado completo
+                if (toggleOcultarLlenos.checked && slotsOcupadosPorRol[rol] >= 2) {
+                    return; 
+                }
+
+                html += `<h3 class="text-md font-bold mt-4 text-gray-200 uppercase tracking-wider">➕ Candidatos para el Rol: {${rol}}</h3>`;
+                let lineasHtmlRol = [];
+
+                // 1º Agregar los que dicen "consigue team up" ordenados alfabéticamente por el personaje a agregar
+                recRecibe[rol].sort((a, b) => a.comp.localeCompare(b.comp)).forEach(obj => {
+                    lineasHtmlRol.push(`<li class="ml-4 list-disc text-sm">Agregar a <strong>${obj.comp}</strong> ➔ <span class="text-gray-300">(${obj.dueño} consigue team up)</span></li>`);
+                });
+
+                // 2º Agregar los que dicen "Obtiene team up gracias a" ordenados alfabéticamente por el personaje a agregar
+                recOtorga[rol].sort((a, b) => a.cazador.localeCompare(b.cazador)).forEach(obj => {
+                    lineasHtmlRol.push(`<li class="ml-4 list-disc text-sm">Agregar a <strong>${obj.cazador}</strong> ➔ <span class="text-gray-400">(Obtiene team up gracias a ${obj.dueño})</span></li>`);
+                });
+
+                html += lineasHtmlRol.length > 0 ? `<ul class="space-y-1 mt-1">${lineasHtmlRol.join('')}</ul>` : `<p class="text-gray-500 italic text-xs ml-4">No hay combinaciones detectadas para este rol.</p>`;
+            });
+
+            salida.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
