@@ -14,7 +14,7 @@
         <header class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
                 <h1 class="text-3xl font-bold mb-2">🎮 Marvel Rivals Team-Up Dashboard</h1>
-                <p class="text-gray-400">Estructura tu equipo por roles. Los personajes seleccionados se removerán de las otras casillas dinámicamente.</p>
+                <p class="text-gray-400">Gestioná tus slots por rol. Podés arrastrar hasta 6 héroes en una sola categoría si querés.</p>
             </div>
             
             <div class="flex items-center bg-[#1f2937] px-4 py-3 rounded-lg border border-gray-700 shadow-md shrink-0">
@@ -26,49 +26,51 @@
             </div>
         </header>
 
+        <!-- BANNER DE WARNING DINÁMICO -->
+        <div id="warningMaxSlots" class="hidden mb-6 bg-yellow-950/80 border border-yellow-500/50 text-yellow-200 px-4 py-3 rounded relative flex items-center justify-between shadow-lg animate-pulse" role="alert">
+            <span id="warningTexto" class="text-sm font-medium"></span>
+            <button onclick="document.getElementById('warningMaxSlots').classList.add('hidden')" class="text-yellow-400 hover:text-yellow-200 font-bold ml-4 text-xs">Entendido</button>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- PANEL DE SELECCIÓN (CONTENEDORES DINÁMICOS) -->
             <div class="space-y-6 bg-[#1f2937] p-6 rounded-lg shadow-xl border border-gray-700 flex flex-col justify-between">
                 <div class="space-y-6">
+                    
+                    <!-- DUELISTS -->
                     <div>
-                        <h3 class="text-lg font-bold text-red-400 mb-3 flex items-center">🔴 SECCIÓN: DUELISTS (DPS)</h3>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-400 mb-1">Slot 1</label>
-                                <select id="d1" class="slot-select w-full bg-[#374151] border border-gray-600 rounded p-2 text-white focus:outline-none focus:border-red-500"></select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-400 mb-1">Slot 2</label>
-                                <select id="d2" class="slot-select w-full bg-[#374151] border border-gray-600 rounded p-2 text-white focus:outline-none focus:border-red-500"></select>
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-lg font-bold text-red-400 flex items-center">🔴 DUELISTS (DPS)</h3>
+                            <div class="flex items-center bg-[#111827] border border-gray-700 rounded-md overflow-hidden">
+                                <button onclick="modificarSlots('d', -1)" class="px-3 py-1 bg-gray-800 text-gray-300 hover:bg-gray-700 text-sm font-bold transition-colors border-r border-gray-700 cursor-pointer">−</button>
+                                <button onclick="modificarSlots('d', 1)" class="px-3 py-1 bg-red-950/40 text-red-400 hover:bg-red-900/40 text-sm font-bold transition-colors cursor-pointer">+</button>
                             </div>
                         </div>
+                        <div id="d-slots-container" class="grid grid-cols-2 gap-4"></div>
                     </div>
 
+                    <!-- VANGUARDS -->
                     <div>
-                        <h3 class="text-lg font-bold text-blue-400 mb-3 flex items-center">🔵 SECCIÓN: VANGUARDS (TANKS)</h3>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-400 mb-1">Slot 1</label>
-                                <select id="v1" class="slot-select w-full bg-[#374151] border border-gray-600 rounded p-2 text-white focus:outline-none focus:border-blue-500"></select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-400 mb-1">Slot 2</label>
-                                <select id="v2" class="slot-select w-full bg-[#374151] border border-gray-600 rounded p-2 text-white focus:outline-none focus:border-blue-500"></select>
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-lg font-bold text-blue-400 flex items-center">🔵 VANGUARDS (TANKS)</h3>
+                            <div class="flex items-center bg-[#111827] border border-gray-700 rounded-md overflow-hidden">
+                                <button onclick="modificarSlots('v', -1)" class="px-3 py-1 bg-gray-800 text-gray-300 hover:bg-gray-700 text-sm font-bold transition-colors border-r border-gray-700 cursor-pointer">−</button>
+                                <button onclick="modificarSlots('v', 1)" class="px-3 py-1 bg-blue-950/40 text-blue-400 hover:bg-blue-900/40 text-sm font-bold transition-colors cursor-pointer">+</button>
                             </div>
                         </div>
+                        <div id="v-slots-container" class="grid grid-cols-2 gap-4"></div>
                     </div>
 
+                    <!-- STRATEGISTS -->
                     <div>
-                        <h3 class="text-lg font-bold text-green-400 mb-3 flex items-center">🟢 SECCIÓN: STRATEGISTS (HEALERS)</h3>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-400 mb-1">Slot 1</label>
-                                <select id="s1" class="slot-select w-full bg-[#374151] border border-gray-600 rounded p-2 text-white focus:outline-none focus:border-green-500"></select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-400 mb-1">Slot 2</label>
-                                <select id="s2" class="slot-select w-full bg-[#374151] border border-gray-600 rounded p-2 text-white focus:outline-none focus:border-green-500"></select>
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-lg font-bold text-green-400 flex items-center">🟢 STRATEGISTS (HEALERS)</h3>
+                            <div class="flex items-center bg-[#111827] border border-gray-700 rounded-md overflow-hidden">
+                                <button onclick="modificarSlots('s', -1)" class="px-3 py-1 bg-gray-800 text-gray-300 hover:bg-gray-700 text-sm font-bold transition-colors border-r border-gray-700 cursor-pointer">−</button>
+                                <button onclick="modificarSlots('s', 1)" class="px-3 py-1 bg-green-950/40 text-green-400 hover:bg-green-900/40 text-sm font-bold transition-colors cursor-pointer">+</button>
                             </div>
                         </div>
+                        <div id="s-slots-container" class="grid grid-cols-2 gap-4"></div>
                     </div>
                 </div>
 
@@ -77,34 +79,35 @@
                 </button>
             </div>
 
-            <div id="salidaPanel" class="bg-[#1f2937] p-6 rounded-lg shadow-xl border border-gray-700 space-y-6 overflow-y-auto max-h-[600px]">
+            <!-- PANEL DE SALIDA / SINERGIAS -->
+            <div id="salidaPanel" class="bg-[#1f2937] p-6 rounded-lg shadow-xl border border-gray-700 space-y-6 overflow-y-auto max-h-[650px]">
                 <p class="text-gray-400 italic">Selecciona personajes para calcular las sinergias automáticamente.</p>
             </div>
         </div>
     </div>
 
-  <script>
+<script>
     let dbRivals = [];
     let duelistBase = [];
     let vanguardBase = [];
     let strategistBase = [];
 
-    const dropdowns = {
-        d1: document.getElementById('d1'), d2: document.getElementById('d2'),
-        v1: document.getElementById('v1'), v2: document.getElementById('v2'),
-        s1: document.getElementById('s1'), s2: document.getElementById('s2')
+    // Ahora la estructura guarda un array de strings (los nombres elegidos) por rol.
+    // Inicialmente arrancan 2 vacíos por categoría. Max total admisible por rol: 6.
+    const composicion = {
+        d: ["", ""],
+        v: ["", ""],
+        s: ["", ""]
     };
 
     const toggleOcultarLlenos = document.getElementById('toggleOcultarLlenos');
     const btnReset = document.getElementById('btnReset');
 
-    // Cargar el CSV automáticamente al abrir la página
     window.addEventListener('DOMContentLoaded', () => {
         Papa.parse("marvel_rivals_52.csv", {
             download: true,
             header: true,
             complete: function(results) {
-                // Mapeamos los datos para normalizar 'Star-Lord' a 'Star Lord' en caliente
                 dbRivals = results.data
                     .filter(row => row.Personaje)
                     .map(row => {
@@ -115,12 +118,10 @@
                     });
                     
                 inicializarListas();
-                renderDropdowns();
-                setupEventListeners();
-                analizarComposicion();
+                renderizarTodosLosSlots();
             },
             error: function(err) {
-                document.getElementById('salidaPanel').innerHTML = `<p class="text-red-400">❌ Error al cargar 'marvel_rivals_52.csv'. Asegúrate de que el archivo esté en la misma carpeta.</p>`;
+                document.getElementById('salidaPanel').innerHTML = `<p class="text-red-400">❌ Error al cargar 'marvel_rivals_52.csv'.</p>`;
             }
         });
     });
@@ -136,205 +137,272 @@
         strategistBase.sort();
     }
 
-    function renderDropdowns() {
-        Object.keys(dropdowns).forEach(id => {
-            const base = id.startsWith('d') ? duelistBase : id.startsWith('v') ? vanguardBase : strategistBase;
-            actualizarOpcionesIndividuales(id, base);
+    // Renderiza la UI basándose puramente en el estado del objeto 'composicion'
+    function renderizarTodosLosSlots() {
+        ['d', 'v', 's'].forEach(rol => renderizarSlotsRol(rol));
+        filtrarDuplicadosGlobales();
+        evaluarAlertaDeComposicion();
+        analizarComposicion();
+    }
+
+    function renderizarSlotsRol(rol) {
+        const contenedor = document.getElementById(`${rol}-slots-container`);
+        contenedor.innerHTML = "";
+
+        const colorFocus = rol === 'd' ? 'focus:border-red-500' : rol === 'v' ? 'focus:border-blue-500' : 'focus:border-green-500';
+
+        composicion[rol].forEach((valorActual, index) => {
+            const slotId = `${rol}${index + 1}`;
+            
+            const divSlot = document.createElement('div');
+            divSlot.className = "group";
+            // Si el slot excede el número estándar (3), se ensancha full width para diseño prolijo si es impar
+            if (index >= 2 && composicion[rol].length % 2 !== 0 && index === composicion[rol].length - 1) {
+                divSlot.className += " col-span-2";
+            }
+
+            divSlot.innerHTML = `
+                <label class="block text-xs font-semibold text-gray-400 mb-1">Slot ${index + 1}</label>
+                <div class="relative">
+                    <select id="${slotId}" onchange="guardarCambioSlot('${rol}', ${index}, this.value)" class="slot-select w-full bg-[#374151] border border-gray-600 rounded p-2 pr-8 text-white focus:outline-none ${colorFocus} appearance-none">
+                    </select>
+                    <button onclick="eliminarSlotEspecifico('${rol}', ${index})" class="absolute inset-y-0 right-0 pr-3 flex items-center text-xs text-gray-400 group-hover:text-red-400 cursor-pointer transition-colors" title="Eliminar este slot">
+                        <span class="group-hover:hidden">▼</span>
+                        <span class="hidden group-hover:inline font-bold">✕</span>
+                    </button>
+                </div>
+            `;
+            contenedor.appendChild(divSlot);
         });
     }
 
-    function setupEventListeners() {
-        Object.keys(dropdowns).forEach(id => {
-            dropdowns[id].addEventListener('change', () => {
-                filtrarDuplicadosGlobales();
-                analizarComposicion();
-            });
-        });
-
-        toggleOcultarLlenos.addEventListener('change', analizarComposicion);
-        btnReset.addEventListener('click', resetearFormulario);
-    }
-
-    function resetearFormulario() {
-        Object.keys(dropdowns).forEach(id => {
-            dropdowns[id].value = "";
-        });
+    function guardarCambioSlot(rol, index, valor) {
+        composicion[rol][index] = valor;
         filtrarDuplicadosGlobales();
         analizarComposicion();
     }
 
-    function filtrarDuplicadosGlobales() {
-        const valoresActuales = {};
-        const ocupados = new Set();
+    function obtenerCantidadSlotsVisibles() {
+        return composicion.d.length + composicion.v.length + composicion.s.length;
+    }
 
-        Object.keys(dropdowns).forEach(id => {
-            const val = dropdowns[id].value;
-            valoresActuales[id] = val;
-            if (val && val !== "") ocupados.add(val);
+    function evaluarAlertaDeComposicion() {
+        const alerta = document.getElementById('warningMaxSlots');
+        const texto = document.getElementById('warningTexto');
+        const cantidad = obtenerCantidadSlotsVisibles();
+
+        if (cantidad === 6) {
+            alerta.classList.add('hidden');
+        } else {
+            alerta.classList.remove('hidden');
+            if (cantidad < 6) {
+                texto.innerHTML = `⚠️ <strong>Composición Incompleta:</strong> Tenés <strong>${cantidad}</strong> slots activos. Recordá que una escuadra estándar de Marvel Rivals usa exactamente <strong>6 héroes</strong>.`;
+            } else {
+                texto.innerHTML = `⚠️ <strong>Composición Excedida:</strong> Tenés <strong>${cantidad}</strong> slots activos. Superaste el límite tradicional de <strong>6 integrantes</strong>.`;
+            }
+        }
+    }
+
+    // ELIMINACIÓN REAL: Saca el índice del array y reconstruye la UI corriendo el resto hacia arriba
+    function eliminarSlotEspecifico(rol, index) {
+        composicion[rol].splice(index, 1);
+        renderizarTodosLosSlots();
+    }
+
+    // AGREGAR / QUITAR desde la botonera superior (+ / -) hasta un máximo de 6 por rol
+    function modificarSlots(rol, cambio) {
+        if (cambio === 1) {
+            if (composicion[rol].length >= 6) return; // Máximo estructural de un equipo completo
+            composicion[rol].push("");
+        } else if (cambio === -1) {
+            if (composicion[rol].length <= 0) return;
+            composicion[rol].pop();
+        }
+        renderizarTodosLosSlots();
+    }
+
+    function resetearFormulario() {
+        composicion.d = ["", ""];
+        composicion.v = ["", ""];
+        composicion.s = ["", ""];
+        document.getElementById('warningMaxSlots').classList.add('hidden');
+        renderizarTodosLosSlots();
+    }
+
+    // Filtra dinámicamente las listas desplegables para evitar personajes repetidos en toda la composición
+    function filtrarDuplicadosGlobales() {
+        const ocupados = new Set();
+        ['d', 'v', 's'].forEach(rol => {
+            composicion[rol].forEach(val => {
+                if (val && val !== "") ocupados.add(val);
+            });
         });
 
-        const mapeoBases = { d1: duelistBase, d2: duelistBase, v1: vanguardBase, v2: vanguardBase, s1: strategistBase, s2: strategistBase };
+        const mapeoBases = { d: duelistBase, v: vanguardBase, s: strategistBase };
 
-        Object.keys(dropdowns).forEach(id => {
-            const valorPropio = valoresActuales[id];
-            const baseRol = mapeoBases[id];
-            const filtrados = baseRol.filter(p => !ocupados.has(p) || p === valorPropio);
-            actualizarOpcionesIndividuales(id, filtrados, valorPropio);
+        ['d', 'v', 's'].forEach(rol => {
+            const baseRol = mapeoBases[rol];
+            composicion[rol].forEach((valorPropio, index) => {
+                const el = document.getElementById(`${rol}${index + 1}`);
+                if (!el) return;
+
+                const filtrados = baseRol.filter(p => !ocupados.has(p) || p === valorPropio);
+                
+                // Actualizar las opciones manteniendo lo seleccionado
+                el.innerHTML = '<option value="">(Vacío)</option>';
+                filtrados.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p;
+                    opt.textContent = p;
+                    if (p === valorPropio) opt.selected = true;
+                    el.appendChild(opt);
+                });
+            });
         });
     }
 
-    function actualizarOpcionesIndividuales(id, lista, valorSeleccionado = "") {
-        const el = dropdowns[id];
-        el.innerHTML = '<option value="">(Vacío)</option>';
-        lista.forEach(p => {
-            const opt = document.createElement('option');
-            opt.value = p;
-            opt.textContent = p;
-            if (p === valorSeleccionado) opt.selected = true;
-            el.appendChild(opt);
-        });
+    // Recolecta todos los valores no vacíos actualmente seleccionados
+    function obtenerSeleccionados() {
+        return [...composicion.d, ...composicion.v, ...composicion.s].filter(v => v !== "");
     }
 
     function analizarComposicion() {
-    const seleccionados = Object.keys(dropdowns).map(id => dropdowns[id].value).filter(v => v !== "");
-    const salida = document.getElementById('salidaPanel');
+        const seleccionados = obtenerSeleccionados();
+        const salida = document.getElementById('salidaPanel');
 
-    if (seleccionados.length === 0) {
-        salida.innerHTML = '<p class="text-gray-400 italic">Completa al menos un slot para ver el mapa completo de sinergias.</p>';
-        return;
-    }
-
-    const teamUp1Map = {}, teamUp2Map = {}, rolesMap = {};
-    dbRivals.forEach(r => {
-        teamUp1Map[r.Personaje] = r.Team_Up_1;
-        teamUp2Map[r.Personaje] = r.Team_Up_2;
-        rolesMap[r.Personaje] = r.Rol;
-    });
-
-    const slotsOcupadosPorRol = {
-        Duelist: [dropdowns.d1.value, dropdowns.d2.value].filter(v => v !== "").length,
-        Vanguard: [dropdowns.v1.value, dropdowns.v2.value].filter(v => v !== "").length,
-        Strategist: [dropdowns.s1.value, dropdowns.s2.value].filter(v => v !== "").length
-    };
-
-    // 1. Sinergias Activas
-    const activos = { Duelist: [], Vanguard: [], Strategist: [] };
-    const categorias = {
-        Duelist: [dropdowns.d1.value, dropdowns.d2.value],
-        Vanguard: [dropdowns.v1.value, dropdowns.v2.value],
-        Strategist: [dropdowns.s1.value, dropdowns.s2.value]
-    };
-
-    let totalActivos = 0;
-    Object.keys(categorias).forEach(rol => {
-        categorias[rol].forEach(p => {
-            if (!p) return;
-            const t1 = teamUp1Map[p];
-            const t2 = teamUp2Map[p];
-            if ((t1 && seleccionados.includes(t1)) || (t2 && seleccionados.includes(t2))) {
-                const aliados = [t1, t2].filter(a => seleccionados.includes(a));
-                activos[rol].push(`<li class="ml-4 list-disc"><strong>${p}</strong> ➔ Activo por <strong>${aliados.join(' & ')}</strong></li>`);
-                totalActivos++;
-            }
-        });
-    });
-
-    // --- CONSTRUCCIÓN DEL HTML ---
-    let html = `<h2 class="text-xl font-bold text-orange-400 border-b border-gray-700 pb-2">🔥 Sinergias Activas en el Equipo</h2>`;
-    
-    if (totalActivos === 0) {
-        html += `<p class="text-gray-500 italic text-sm mt-3">No hay sinergias activas en el equipo actual.</p>`;
-    } else {
-        ['Duelist', 'Vanguard', 'Strategist'].forEach(rol => {
-            if (activos[rol].length > 0) {
-                html += `<h4 class="text-sm font-semibold mt-3 text-gray-300">⚔️ Sección ${rol}</h4>`;
-                html += `<ul class="space-y-1 mt-1 text-sm">${activos[rol].join('')}</ul>`;
-            }
-        });
-    }
-
-    html += `<div class="my-6 border-t border-gray-700"></div>`;
-    html += `<h2 class="text-xl font-bold text-green-400 border-b border-gray-700 pb-2">💡 Opciones Disponibles para Slots Vacíos</h2>`;
-    
-    // 2. Recomendaciones Cruzadas
-    const recRecibe = { Duelist: [], Vanguard: [], Strategist: [] };
-    const recOtorga = { Duelist: [], Vanguard: [], Strategist: [] };
-    const vistasRecibe = { Duelist: new Set(), Vanguard: new Set(), Strategist: new Set() };
-    const vistasOtorga = { Duelist: new Set(), Vanguard: new Set(), Strategist: new Set() };
-
-    // Función helper para resolver el rol dinámico considerando la naturaleza "comodín" de Deadpool
-    function obtenerRolPersonaje(nombre, rolEvaluado) {
-        if (nombre === "Deadpool") return rolEvaluado; // Deadpool se adapta al rol del bloque actual
-        return rolesMap[nombre] || "Duelist";
-    }
-
-    // Evaluamos las recomendaciones de forma independiente para cada rol de destino
-    ['Duelist', 'Vanguard', 'Strategist'].forEach(rolActual => {
-        if (toggleOcultarLlenos.checked && slotsOcupadosPorRol[rolActual] >= 2) return;
-
-        seleccionados.forEach(p => {
-            // Caso A: Personajes seleccionados que habilitan un Team-Up a un tercero libre
-            [teamUp1Map[p], teamUp2Map[p]].forEach(comp => {
-                if (comp && !seleccionados.includes(comp)) {
-                    const rComp = obtenerRolPersonaje(comp, rolActual);
-                    
-                    // Si el personaje recomendado pertenece al rol que estamos analizando en esta iteración
-                    if (rComp === rolActual) {
-                        const clave = `${comp}|${p}`;
-                        if (!vistasRecibe[rolActual].has(clave)) {
-                            vistasRecibe[rolActual].add(clave);
-                            recRecibe[rolActual].push({ comp, dueño: p });
-                        }
-                    }
-                }
-            });
-
-            // Caso B: Personajes libres que le otorgan un Team-Up a alguien ya seleccionado
-            dbRivals.forEach(r => {
-                const candidato = r.Personaje;
-                if ((r.Team_Up_1 === p || r.Team_Up_2 === p) && !seleccionados.includes(candidato)) {
-                    const rCazador = obtenerRolPersonaje(candidato, rolActual);
-                    
-                    if (rCazador === rolActual) {
-                        const clave = `${candidato}|${p}`;
-                        if (!vistasOtorga[rolActual].has(clave)) {
-                            vistasOtorga[rolActual].add(clave);
-                            recOtorga[rolActual].push({ "cazador": candidato, dueño: p });
-                        }
-                    }
-                }
-            });
-        });
-    });
-
-    let totalRecomendacionesGlobales = 0;
-
-    ['Duelist', 'Vanguard', 'Strategist'].forEach(rol => {
-        if (toggleOcultarLlenos.checked && slotsOcupadosPorRol[rol] >= 2) return; 
-
-        let lineasHtmlRol = [];
-
-        recRecibe[rol].sort((a, b) => a.comp.localeCompare(b.comp)).forEach(obj => {
-            lineasHtmlRol.push(`<li class="ml-4 list-disc text-sm">Agregar a <strong>${obj.comp}</strong> ➔ <span class="text-gray-300">(${obj.dueño} consigue team up)</span></li>`);
-        });
-
-        recOtorga[rol].sort((a, b) => a.cazador.localeCompare(b.cazador)).forEach(obj => {
-            lineasHtmlRol.push(`<li class="ml-4 list-disc text-sm">Agregar a <strong>${obj.cazador}</strong> ➔ <span class="text-gray-400">(Obtiene team up gracias a ${obj.dueño})</span></li>`);
-        });
-
-        if (lineasHtmlRol.length > 0) {
-            html += `<h3 class="text-md font-bold mt-4 text-gray-200 uppercase tracking-wider">➕ Candidatos para el Rol: ${rol}</h3>`;
-            html += `<ul class="space-y-1 mt-1">${lineasHtmlRol.join('')}</ul>`;
-            totalRecomendacionesGlobales += lineasHtmlRol.length;
+        if (seleccionados.length === 0) {
+            salida.innerHTML = '<p class="text-gray-400 italic">Completa al menos un slot para ver el mapa completo de sinergias.</p>';
+            return;
         }
-    });
 
-    if (totalRecomendacionesGlobales === 0) {
-        html += `<p class="text-gray-500 italic text-sm mt-3">No hay combinaciones o candidatos detectados para los slots libres.</p>`;
+        const teamUp1Map = {}, teamUp2Map = {}, rolesMap = {};
+        dbRivals.forEach(r => {
+            teamUp1Map[r.Personaje] = r.Team_Up_1;
+            teamUp2Map[r.Personaje] = r.Team_Up_2;
+            rolesMap[r.Personaje] = r.Rol;
+        });
+
+        const slotsOcupadosPorRol = {
+            Duelist: composicion.d.filter(v => v !== "").length,
+            Vanguard: composicion.v.filter(v => v !== "").length,
+            Strategist: composicion.s.filter(v => v !== "").length
+        };
+
+        const limitesPorRol = {
+            Duelist: composicion.d.length,
+            Vanguard: composicion.v.length,
+            Strategist: composicion.s.length
+        };
+
+        const activos = { Duelist: [], Vanguard: [], Strategist: [] };
+        
+        // Mapear sinergias activas
+        ['d', 'v', 's'].forEach(rolKey => {
+            const rolNombre = rolKey === 'd' ? 'Duelist' : rolKey === 'v' ? 'Vanguard' : 'Strategist';
+            composicion[rolKey].forEach(p => {
+                if (!p) return;
+                const t1 = teamUp1Map[p];
+                const t2 = teamUp2Map[p];
+                if ((t1 && seleccionados.includes(t1)) || (t2 && seleccionados.includes(t2))) {
+                    const aliados = [t1, t2].filter(a => seleccionados.includes(a));
+                    activos[rolNombre].push(`<li class="ml-4 list-disc"><strong>${p}</strong> ➔ Activo por <strong>${aliados.join(' & ')}</strong></li>`);
+                }
+            });
+        });
+
+        let totalActivos = activos.Duelist.length + activos.Vanguard.length + activos.Strategist.length;
+        let html = `<h2 class="text-xl font-bold text-orange-400 border-b border-gray-700 pb-2">🔥 Sinergias Activas en el Equipo</h2>`;
+        
+        if (totalActivos === 0) {
+            html += `<p class="text-gray-500 italic text-sm mt-3">No hay sinergias activas en el equipo actual.</p>`;
+        } else {
+            ['Duelist', 'Vanguard', 'Strategist'].forEach(rol => {
+                if (activos[rol].length > 0) {
+                    html += `<h4 class="text-sm font-semibold mt-3 text-gray-300">⚔️ Sección ${rol}</h4>`;
+                    html += `<ul class="space-y-1 mt-1 text-sm">${activos[rol].join('')}</ul>`;
+                }
+            });
+        }
+
+        html += `<div class="my-6 border-t border-gray-700"></div>`;
+        html += `<h2 class="text-xl font-bold text-green-400 border-b border-gray-700 pb-2">💡 Opciones Disponibles para Slots Vacíos</h2>`;
+        
+        const recRecibe = { Duelist: [], Vanguard: [], Strategist: [] };
+        const recOtorga = { Duelist: [], Vanguard: [], Strategist: [] };
+        const vistasRecibe = { Duelist: new Set(), Vanguard: new Set(), Strategist: new Set() };
+        const vistasOtorga = { Duelist: new Set(), Vanguard: new Set(), Strategist: new Set() };
+
+        function obtenerRolPersonaje(nombre, rolEvaluado) {
+            if (nombre === "Deadpool") return rolEvaluado; 
+            return rolesMap[nombre] || "Duelist";
+        }
+
+        ['Duelist', 'Vanguard', 'Strategist'].forEach(rolActual => {
+            if (limitesPorRol[rolActual] === 0) return; 
+            if (toggleOcultarLlenos.checked && slotsOcupadosPorRol[rolActual] >= limitesPorRol[rolActual]) return;
+
+            seleccionados.forEach(p => {
+                [teamUp1Map[p], teamUp2Map[p]].forEach(comp => {
+                    if (comp && !seleccionados.includes(comp)) {
+                        const rComp = obtenerRolPersonaje(comp, rolActual);
+                        if (rComp === rolActual) {
+                            const clave = `${comp}|${p}`;
+                            if (!vistasRecibe[rolActual].has(clave)) {
+                                vistasRecibe[rolActual].add(clave);
+                                recRecibe[rolActual].push({ comp, dueño: p });
+                            }
+                        }
+                    }
+                });
+
+                dbRivals.forEach(r => {
+                    const candidato = r.Personaje;
+                    if ((r.Team_Up_1 === p || r.Team_Up_2 === p) && !seleccionados.includes(candidato)) {
+                        const rCazador = obtenerRolPersonaje(candidato, rolActual);
+                        if (rCazador === rolActual) {
+                            const clave = `${candidato}|${p}`;
+                            if (!vistasOtorga[rolActual].has(clave)) {
+                                vistasOtorga[rolActual].add(clave);
+                                recOtorga[rolActual].push({ "cazador": candidato, dueño: p });
+                            }
+                        }
+                    }
+                });
+            });
+        });
+
+        let totalRecomendacionesGlobales = 0;
+
+        ['Duelist', 'Vanguard', 'Strategist'].forEach(rol => {
+            if (limitesPorRol[rol] === 0) return;
+            if (toggleOcultarLlenos.checked && slotsOcupadosPorRol[rol] >= limitesPorRol[rol]) return; 
+
+            let lineasHtmlRol = [];
+
+            recRecibe[rol].sort((a, b) => a.comp.localeCompare(b.comp)).forEach(obj => {
+                lineasHtmlRol.push(`<li class="ml-4 list-disc text-sm">Agregar a <strong>${obj.comp}</strong> ➔ <span class="text-gray-300">(${obj.dueño} consigue team up)</span></li>`);
+            });
+
+            recOtorga[rol].sort((a, b) => a.cazador.localeCompare(b.cazador)).forEach(obj => {
+                lineasHtmlRol.push(`<li class="ml-4 list-disc text-sm">Agregar a <strong>${obj.cazador}</strong> ➔ <span class="text-gray-400">(Obtiene team up gracias a ${obj.dueño})</span></li>`);
+            });
+
+            if (lineasHtmlRol.length > 0) {
+                html += `<h3 class="text-md font-bold mt-4 text-gray-200 uppercase tracking-wider">➕ Candidatos para el Rol: ${rol} (${slotsOcupadosPorRol[rol]}/${limitesPorRol[rol]})</h3>`;
+                html += `<ul class="space-y-1 mt-1">${lineasHtmlRol.join('')}</ul>`;
+                totalRecomendacionesGlobales += lineasHtmlRol.length;
+            }
+        });
+
+        if (totalRecomendacionesGlobales === 0) {
+            html += `<p class="text-gray-500 italic text-sm mt-3">No hay combinaciones o candidatos detectados para los slots libres.</p>`;
+        }
+
+        salida.innerHTML = html;
     }
 
-    salida.innerHTML = html;
-}
+    // Escuchar el checkbox de ocultar sugerencias de forma reactiva
+    toggleOcultarLlenos.addEventListener('change', analizarComposicion);
 </script>
 </body>
 </html>
