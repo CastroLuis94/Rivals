@@ -26,18 +26,15 @@
             </div>
         </header>
 
-        <!-- BANNER DE WARNING DINÁMICO -->
         <div id="warningMaxSlots" class="hidden mb-6 bg-yellow-950/80 border border-yellow-500/50 text-yellow-200 px-4 py-3 rounded relative flex items-center justify-between shadow-lg animate-pulse" role="alert">
             <span id="warningTexto" class="text-sm font-medium"></span>
             <button onclick="document.getElementById('warningMaxSlots').classList.add('hidden')" class="text-yellow-400 hover:text-yellow-200 font-bold ml-4 text-xs">Entendido</button>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- PANEL DE SELECCIÓN (CONTENEDORES DINÁMICOS) -->
             <div class="space-y-6 bg-[#1f2937] p-6 rounded-lg shadow-xl border border-gray-700 flex flex-col justify-between">
                 <div class="space-y-6">
                     
-                    <!-- DUELISTS -->
                     <div>
                         <div class="flex items-center justify-between mb-3">
                             <h3 class="text-lg font-bold text-red-400 flex items-center">🔴 DUELISTS (DPS)</h3>
@@ -49,7 +46,6 @@
                         <div id="d-slots-container" class="grid grid-cols-2 gap-4"></div>
                     </div>
 
-                    <!-- VANGUARDS -->
                     <div>
                         <div class="flex items-center justify-between mb-3">
                             <h3 class="text-lg font-bold text-blue-400 flex items-center">🔵 VANGUARDS (TANKS)</h3>
@@ -61,7 +57,6 @@
                         <div id="v-slots-container" class="grid grid-cols-2 gap-4"></div>
                     </div>
 
-                    <!-- STRATEGISTS -->
                     <div>
                         <div class="flex items-center justify-between mb-3">
                             <h3 class="text-lg font-bold text-green-400 flex items-center">🟢 STRATEGISTS (HEALERS)</h3>
@@ -74,12 +69,11 @@
                     </div>
                 </div>
 
-                <button id="btnReset" class="w-full bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold py-2 px-4 rounded transition-colors shadow mt-6 cursor-pointer text-sm">
+                <button id="btnReset" onclick="resetearFormulario()" class="w-full bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold py-2 px-4 rounded transition-colors shadow mt-6 cursor-pointer text-sm">
                     ♻️ Resetear Equipo
                 </button>
             </div>
 
-            <!-- PANEL DE SALIDA / SINERGIAS -->
             <div id="salidaPanel" class="bg-[#1f2937] p-6 rounded-lg shadow-xl border border-gray-700 space-y-6 overflow-y-auto max-h-[650px]">
                 <p class="text-gray-400 italic">Selecciona personajes para calcular las sinergias automáticamente.</p>
             </div>
@@ -92,8 +86,6 @@
     let vanguardBase = [];
     let strategistBase = [];
 
-    // Ahora la estructura guarda un array de strings (los nombres elegidos) por rol.
-    // Inicialmente arrancan 2 vacíos por categoría. Max total admisible por rol: 6.
     const composicion = {
         d: ["", ""],
         v: ["", ""],
@@ -101,7 +93,6 @@
     };
 
     const toggleOcultarLlenos = document.getElementById('toggleOcultarLlenos');
-    const btnReset = document.getElementById('btnReset');
 
     window.addEventListener('DOMContentLoaded', () => {
         Papa.parse("marvel_rivals_52.csv", {
@@ -137,7 +128,6 @@
         strategistBase.sort();
     }
 
-    // Renderiza la UI basándose puramente en el estado del objeto 'composicion'
     function renderizarTodosLosSlots() {
         ['d', 'v', 's'].forEach(rol => renderizarSlotsRol(rol));
         filtrarDuplicadosGlobales();
@@ -156,7 +146,6 @@
             
             const divSlot = document.createElement('div');
             divSlot.className = "group";
-            // Si el slot excede el número estándar (3), se ensancha full width para diseño prolijo si es impar
             if (index >= 2 && composicion[rol].length % 2 !== 0 && index === composicion[rol].length - 1) {
                 divSlot.className += " col-span-2";
             }
@@ -203,16 +192,14 @@
         }
     }
 
-    // ELIMINACIÓN REAL: Saca el índice del array y reconstruye la UI corriendo el resto hacia arriba
     function eliminarSlotEspecifico(rol, index) {
         composicion[rol].splice(index, 1);
         renderizarTodosLosSlots();
     }
 
-    // AGREGAR / QUITAR desde la botonera superior (+ / -) hasta un máximo de 6 por rol
     function modificarSlots(rol, cambio) {
         if (cambio === 1) {
-            if (composicion[rol].length >= 6) return; // Máximo estructural de un equipo completo
+            if (composicion[rol].length >= 6) return;
             composicion[rol].push("");
         } else if (cambio === -1) {
             if (composicion[rol].length <= 0) return;
@@ -229,7 +216,6 @@
         renderizarTodosLosSlots();
     }
 
-    // Filtra dinámicamente las listas desplegables para evitar personajes repetidos en toda la composición
     function filtrarDuplicadosGlobales() {
         const ocupados = new Set();
         ['d', 'v', 's'].forEach(rol => {
@@ -248,7 +234,6 @@
 
                 const filtrados = baseRol.filter(p => !ocupados.has(p) || p === valorPropio);
                 
-                // Actualizar las opciones manteniendo lo seleccionado
                 el.innerHTML = '<option value="">(Vacío)</option>';
                 filtrados.forEach(p => {
                     const opt = document.createElement('option');
@@ -261,7 +246,6 @@
         });
     }
 
-    // Recolecta todos los valores no vacíos actualmente seleccionados
     function obtenerSeleccionados() {
         return [...composicion.d, ...composicion.v, ...composicion.s].filter(v => v !== "");
     }
@@ -282,6 +266,7 @@
             rolesMap[r.Personaje] = r.Rol;
         });
 
+        // Corrección de normalización de nombres para el mapeo dinámico
         const slotsOcupadosPorRol = {
             Duelist: composicion.d.filter(v => v !== "").length,
             Vanguard: composicion.v.filter(v => v !== "").length,
@@ -296,7 +281,6 @@
 
         const activos = { Duelist: [], Vanguard: [], Strategist: [] };
         
-        // Mapear sinergias activas
         ['d', 'v', 's'].forEach(rolKey => {
             const rolNombre = rolKey === 'd' ? 'Duelist' : rolKey === 'v' ? 'Vanguard' : 'Strategist';
             composicion[rolKey].forEach(p => {
@@ -401,7 +385,6 @@
         salida.innerHTML = html;
     }
 
-    // Escuchar el checkbox de ocultar sugerencias de forma reactiva
     toggleOcultarLlenos.addEventListener('change', analizarComposicion);
 </script>
 </body>
